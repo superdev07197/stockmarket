@@ -6,10 +6,10 @@ import React, { useEffect, useState } from 'react';
 
 import '@fortawesome/fontawesome-svg-core/styles.css';
 
-import useDebounce from './hooks/useDebounce';
+import useDebounce from '../hooks/useDebounce';
 
-import HeaderComponent from './components/Header';
-import Layout from './components/Layout';
+import HeaderComponent from '../components/Header';
+import Layout from '../components/Layout';
 
 export default function HomePage({ stockList }: { stockList: any[] }) {
   const [searchTerm, setSearchTerm] = useState('');

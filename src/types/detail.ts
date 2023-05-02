@@ -1,4 +1,4 @@
-export interface IDetail {
+export default interface IDetail {
     Note: string;
     Symbol: string;
     AssetType: string;

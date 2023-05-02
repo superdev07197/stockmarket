@@ -1,4 +1,4 @@
-export interface IStock {
+export default interface IStock {
     '1. symbol': string;
     '2. name': string;
     '3. type': string;
