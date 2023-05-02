@@ -6,11 +6,10 @@ Chart.register(CategoryScale, LinearScale, ...registerables);
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
-import ViewList from '@/components/DetailComponent';
-import Layout from '@/components/Layout';
-import Modal from '@/components/Modal';
-
-import { IDetail } from '@/types/detail';
+import { IDetail } from '../types/detail';
+import ViewList from '../components/Detail';
+import Modal from '../components/Modal';
+import Layout from '../components/Layout';
 
 interface Data {
   [key: string]: {

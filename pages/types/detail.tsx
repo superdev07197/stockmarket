@@ -1,5 +1,5 @@
 export interface IDetail {
-    Note: any;
+    Note: string;
     Symbol: string;
     AssetType: string;
     Name: string;
