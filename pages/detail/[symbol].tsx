@@ -1,19 +1,35 @@
 import { faLineChart } from '@fortawesome/free-solid-svg-icons';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { CategoryScale, Chart, LinearScale, registerables } from 'chart.js';
+Chart.register(CategoryScale, LinearScale, ...registerables);
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
-import ViewList from '@/components/Detail';
+import ViewList from '@/components/DetailComponent';
 import Layout from '@/components/Layout';
+import Modal from '@/components/Modal';
 
 import { IDetail } from '@/types/detail';
 
+interface Data {
+  [key: string]: {
+    '1. open': string;
+    [key: string]: string;
+  };
+}
+
 const Detail = () => {
   const [overview, setOverview] = useState<IDetail>();
+  const [dateList, setDateList] = useState<string[]>([]);
+  const [highList, setHighList] = useState<string[]>([]);
+  const [showModal, setShowModal] = useState(false);
 
   const router = useRouter();
   const { symbol } = router.query;
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
 
   const fetchDetail = async (symbol: string) => {
     const res = await fetch(
@@ -24,9 +40,28 @@ const Detail = () => {
     setOverview(jsonData);
   };
 
+  const fetchDailyData = async () => {
+    const res = await fetch(
+      `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&apikey=demo`
+    );
+    const jsonData = await res.json();
+    const datesData = Object.keys(jsonData['Time Series (Daily)']);
+    const dailyDataArrs: Data = jsonData['Time Series (Daily)'];
+
+    const highTemp: string[] = Object.values(dailyDataArrs).map(
+      (item: { [key: string]: string }) => item['2. high']
+    );
+    setHighList(highTemp);
+    setDateList(datesData);
+  };
+
   useEffect(() => {
     fetchDetail(symbol as string);
   }, [symbol]);
+
+  useEffect(() => {
+    fetchDailyData();
+  }, []);
 
   return (
     <Layout>
@@ -42,6 +77,13 @@ const Detail = () => {
                 {overview?.Name}
               </span>
               <p className='pt-6'>{overview?.Description}</p>
+            </div>
+            <div>
+              <FontAwesomeIcon
+                icon={faLineChart}
+                onClick={() => setShowModal(true)}
+                className='absolute right-5 top-5 cursor-pointer rounded-md bg-cyan-500 p-[1.32rem] text-white shadow-lg shadow-cyan-500/50 focus:md:p-5'
+              />
             </div>
             <div className='grid grid-cols-1 gap-6 shadow-zinc-200 md:grid-cols-2'>
               <ViewList title='Symbol' value={overview?.Symbol} />
@@ -73,6 +115,13 @@ const Detail = () => {
                 value={overview?.Address}
               />
             </div>
+            {showModal && (
+              <Modal
+                onClose={handleCloseModal}
+                labels={dateList}
+                highList={highList}
+              />
+            )}
           </div>
         ))}
       <div className='absolute bottom-0 left-0 px-3 py-2 text-white'>
